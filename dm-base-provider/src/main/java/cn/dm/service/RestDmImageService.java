@@ -1,5 +1,7 @@
 package cn.dm.service;
 
+import cn.dm.common.Constants;
+import cn.dm.common.EmptyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zezhong.shang on 18-5-15.
@@ -28,12 +27,14 @@ public class RestDmImageService {
 
     @RequestMapping(value = "/getDmImageById", method = RequestMethod.POST)
     public DmImage getDmImageById(@RequestParam("id") Long id) throws Exception {
-        return dmImageMapper.getDmImageById(id);
+        DmImage dmImage=dmImageMapper.getDmImageById(id);
+        return setDefaultImg(dmImage);
     }
 
     @RequestMapping(value = "/getDmImageListByMap", method = RequestMethod.POST)
     public List<DmImage> getDmImageListByMap(@RequestBody Map<String, Object> param) throws Exception {
-        return dmImageMapper.getDmImageListByMap(param);
+        List<DmImage> dmImageList= dmImageMapper.getDmImageListByMap(param);
+        return setDefaultImgList(dmImageList);
     }
 
     @RequestMapping(value = "/getDmImageCountByMap", method = RequestMethod.POST)
@@ -43,7 +44,10 @@ public class RestDmImageService {
 
     @RequestMapping(value = "/qdtxAddDmImage", method = RequestMethod.POST)
     public Integer qdtxAddDmImage(@RequestBody DmImage dmImage) throws Exception {
-        dmImage.setCreatedTime(new Date());
+        if(EmptyUtils.isNotEmpty(dmImage) && EmptyUtils.isNotEmpty(dmImage.getImgUrl())){
+            dmImage.setCreatedTime(new Date());
+            dmImage.setImgUrl(dmImage.getImgUrl().substring(dmImage.getImgUrl().lastIndexOf("/")+1,dmImage.getImgUrl().length()));
+        }
         return dmImageMapper.insertDmImage(dmImage);
     }
 
@@ -61,6 +65,48 @@ public class RestDmImageService {
         imageParam.put("targetId", targetId);
         imageParam.put("type", type);
         imageParam.put("category", category);
-        return dmImageMapper.getDmImageListByMap(imageParam);
+        List<DmImage> dmImageList=  dmImageMapper.getDmImageListByMap(imageParam);
+        return setDefaultImgList(dmImageList);
+    }
+
+    public DmImage  setDefaultImg(DmImage dmImage)throws Exception{
+        if(EmptyUtils.isEmpty(dmImage)){
+            dmImage=new DmImage();
+        }
+        String defaultImg=null;
+        if(EmptyUtils.isEmpty(dmImage.getCategory())){
+            defaultImg=Constants.DEFAULT_NORMAL;
+        }else if(dmImage.getCategory()== Constants.Image.ImageCategory.user){
+            defaultImg=Constants.DEFAULT_USER;
+        }else if(dmImage.getCategory()== Constants.Image.ImageCategory.item){
+            if(dmImage.getType()==Constants.Image.ImageType.normal){
+                defaultImg=Constants.DEFAULT_NORMAL;
+            }else if(dmImage.getType()==Constants.Image.ImageType.carousel){
+                defaultImg=Constants.DEFAULT_CAROUSEL;
+            }else if(dmImage.getType()==Constants.Image.ImageType.poster){
+                defaultImg=Constants.DEFAULT_POSTER;
+            }
+        }
+        dmImage.setImgUrl(EmptyUtils.isNotEmpty(dmImage.getImgUrl())? dmImage.getImgUrl():defaultImg);
+        dmImage.setImgUrl(Constants.FILE_PRE+dmImage.getImgUrl());
+        return dmImage;
+    }
+    public List<DmImage> setDefaultImgList(List<DmImage> dmImages)throws Exception{
+        if(EmptyUtils.isEmpty(dmImages)){
+            dmImages=new ArrayList<DmImage>();
+            DmImage dmImage=new DmImage();
+            dmImage.setImgUrl(Constants.DEFAULT_NORMAL);
+            dmImages.add(dmImage);
+        }
+        for (DmImage dmImage:dmImages){
+            setDefaultImg(dmImage);
+        }
+        return dmImages;
+    }
+
+    public static void main(String[] args) {
+       String a="http://192.168.9.151:8888/524314979315224576.png";
+       String name=a.substring(a.lastIndexOf("/")+1,a.length());
+       System.out.println(name);
     }
 }

@@ -60,6 +60,3 @@ eureka:
     prefer-ip-address: true
 server:
   port: 7002
-
-
-
