@@ -95,7 +95,7 @@ public class RestDmImageService {
         if(EmptyUtils.isEmpty(dmImages)){
             dmImages=new ArrayList<DmImage>();
             DmImage dmImage=new DmImage();
-            dmImage.setImgUrl(Constants.FILE_PRE+Constants.DEFAULT_NORMAL);
+            dmImage.setImgUrl(Constants.DEFAULT_NORMAL);
             dmImages.add(dmImage);
         }
         for (DmImage dmImage:dmImages){
