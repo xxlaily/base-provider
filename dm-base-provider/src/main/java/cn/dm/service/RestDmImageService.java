@@ -27,13 +27,13 @@ public class RestDmImageService {
 
     @RequestMapping(value = "/getDmImageById", method = RequestMethod.POST)
     public DmImage getDmImageById(@RequestParam("id") Long id) throws Exception {
-        DmImage dmImage=dmImageMapper.getDmImageById(id);
+        DmImage dmImage = dmImageMapper.getDmImageById(id);
         return setDefaultImg(dmImage);
     }
 
     @RequestMapping(value = "/getDmImageListByMap", method = RequestMethod.POST)
     public List<DmImage> getDmImageListByMap(@RequestBody Map<String, Object> param) throws Exception {
-        List<DmImage> dmImageList= dmImageMapper.getDmImageListByMap(param);
+        List<DmImage> dmImageList = dmImageMapper.getDmImageListByMap(param);
         return setDefaultImgList(dmImageList);
     }
 
@@ -44,9 +44,9 @@ public class RestDmImageService {
 
     @RequestMapping(value = "/qdtxAddDmImage", method = RequestMethod.POST)
     public Integer qdtxAddDmImage(@RequestBody DmImage dmImage) throws Exception {
-        if(EmptyUtils.isNotEmpty(dmImage) && EmptyUtils.isNotEmpty(dmImage.getImgUrl())){
+        if (EmptyUtils.isNotEmpty(dmImage) && EmptyUtils.isNotEmpty(dmImage.getImgUrl())) {
             dmImage.setCreatedTime(new Date());
-            dmImage.setImgUrl(dmImage.getImgUrl().substring(dmImage.getImgUrl().lastIndexOf("/")+1,dmImage.getImgUrl().length()));
+            dmImage.setImgUrl(dmImage.getImgUrl().substring(dmImage.getImgUrl().lastIndexOf("/") + 1, dmImage.getImgUrl().length()));
         }
         return dmImageMapper.insertDmImage(dmImage);
     }
@@ -65,48 +65,50 @@ public class RestDmImageService {
         imageParam.put("targetId", targetId);
         imageParam.put("type", type);
         imageParam.put("category", category);
-        List<DmImage> dmImageList=  dmImageMapper.getDmImageListByMap(imageParam);
-        return setDefaultImgList(dmImageList);
+        List<DmImage> dmImageList = dmImageMapper.getDmImageListByMap(imageParam);
+        return setDefaultImgList(dmImageList, category, type);
     }
 
-    public DmImage  setDefaultImg(DmImage dmImage)throws Exception{
-        if(EmptyUtils.isEmpty(dmImage)){
-            dmImage=new DmImage();
+    public DmImage setDefaultImg(DmImage dmImage) throws Exception {
+        if (EmptyUtils.isEmpty(dmImage)) {
+            dmImage = new DmImage();
         }
-        String defaultImg=null;
-        if(EmptyUtils.isEmpty(dmImage.getCategory())){
-            defaultImg=Constants.DEFAULT_NORMAL;
-        }else if(dmImage.getCategory()== Constants.Image.ImageCategory.user){
-            defaultImg=Constants.DEFAULT_USER;
-        }else if(dmImage.getCategory()== Constants.Image.ImageCategory.item){
-            if(dmImage.getType()==Constants.Image.ImageType.normal){
-                defaultImg=Constants.DEFAULT_NORMAL;
-            }else if(dmImage.getType()==Constants.Image.ImageType.carousel){
-                defaultImg=Constants.DEFAULT_CAROUSEL;
-            }else if(dmImage.getType()==Constants.Image.ImageType.poster){
-                defaultImg=Constants.DEFAULT_POSTER;
+        String defaultImg = null;
+        if (EmptyUtils.isEmpty(dmImage.getCategory())) {
+            defaultImg = Constants.DEFAULT_NORMAL;
+        } else if (dmImage.getCategory() == Constants.Image.ImageCategory.user) {
+            defaultImg = Constants.DEFAULT_USER;
+        } else if (dmImage.getCategory() == Constants.Image.ImageCategory.item) {
+            if (dmImage.getType() == Constants.Image.ImageType.normal) {
+                defaultImg = Constants.DEFAULT_NORMAL;
+            } else if (dmImage.getType() == Constants.Image.ImageType.carousel) {
+                defaultImg = Constants.DEFAULT_CAROUSEL;
+            } else if (dmImage.getType() == Constants.Image.ImageType.poster) {
+                defaultImg = Constants.DEFAULT_POSTER;
             }
         }
-        dmImage.setImgUrl(EmptyUtils.isNotEmpty(dmImage.getImgUrl())? dmImage.getImgUrl():defaultImg);
-        dmImage.setImgUrl(Constants.FILE_PRE+dmImage.getImgUrl());
+        dmImage.setImgUrl(EmptyUtils.isNotEmpty(dmImage.getImgUrl()) ? dmImage.getImgUrl() : defaultImg);
+        dmImage.setImgUrl(Constants.FILE_PRE + dmImage.getImgUrl());
         return dmImage;
     }
-    public List<DmImage> setDefaultImgList(List<DmImage> dmImages)throws Exception{
-        if(EmptyUtils.isEmpty(dmImages)){
-            dmImages=new ArrayList<DmImage>();
-            DmImage dmImage=new DmImage();
-            dmImage.setImgUrl(Constants.DEFAULT_NORMAL);
+
+    public List<DmImage> setDefaultImgList(List<DmImage> dmImages, Integer category, Integer type) throws Exception {
+        if (EmptyUtils.isEmpty(dmImages)) {
+            dmImages = new ArrayList<DmImage>();
+            DmImage dmImage = new DmImage();
+            dmImage.setCategory(category);
+            dmImage.setType(type);
             dmImages.add(dmImage);
         }
-        for (DmImage dmImage:dmImages){
+        for (DmImage dmImage : dmImages) {
             setDefaultImg(dmImage);
         }
         return dmImages;
     }
 
     public static void main(String[] args) {
-       String a="http://192.168.9.151:8888/524314979315224576.png";
-       String name=a.substring(a.lastIndexOf("/")+1,a.length());
-       System.out.println(name);
+        String a = "http://192.168.9.151:8888/524314979315224576.png";
+        String name = a.substring(a.lastIndexOf("/") + 1, a.length());
+        System.out.println(name);
     }
 }
