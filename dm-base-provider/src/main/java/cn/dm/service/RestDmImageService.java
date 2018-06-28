@@ -31,11 +31,11 @@ public class RestDmImageService {
         return setDefaultImg(dmImage);
     }
 
-    @RequestMapping(value = "/getDmImageListByMap", method = RequestMethod.POST)
-    public List<DmImage> getDmImageListByMap(@RequestBody Map<String, Object> param) throws Exception {
-        List<DmImage> dmImageList = dmImageMapper.getDmImageListByMap(param);
-        return setDefaultImgList(dmImageList);
-    }
+//    @RequestMapping(value = "/getDmImageListByMap", method = RequestMethod.POST)
+//    public List<DmImage> getDmImageListByMap(@RequestBody Map<String, Object> param) throws Exception {
+//        List<DmImage> dmImageList = dmImageMapper.getDmImageListByMap(param);
+//        return setDefaultImgList(dmImageList);
+//    }
 
     @RequestMapping(value = "/getDmImageCountByMap", method = RequestMethod.POST)
     public Integer getDmImageCountByMap(@RequestBody Map<String, Object> param) throws Exception {
