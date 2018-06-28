@@ -2,6 +2,8 @@ package cn.dm.service;
 
 import cn.dm.common.Constants;
 import cn.dm.common.EmptyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +23,7 @@ import java.util.*;
  */
 @RestController
 public class RestDmImageService {
-
+    private static final Logger logger = LoggerFactory.getLogger(RestDmImageService.class);
     @Autowired
     private DmImageMapper dmImageMapper;
 
@@ -75,15 +77,20 @@ public class RestDmImageService {
         }
         String defaultImg = null;
         if (EmptyUtils.isEmpty(dmImage.getCategory())) {
+            logger.info("[setDefaultImg]" + "category为空，则设置为默认图片DEFAULT_NORMAL");
             defaultImg = Constants.DEFAULT_NORMAL;
         } else if (dmImage.getCategory() == Constants.Image.ImageCategory.user) {
+            logger.info("[setDefaultImg]" + "category为0，则设置为用户默认图片DEFAULT_USER");
             defaultImg = Constants.DEFAULT_USER;
         } else if (dmImage.getCategory() == Constants.Image.ImageCategory.item) {
             if (dmImage.getType() == Constants.Image.ImageType.normal) {
+                logger.info("[setDefaultImg]" + "category为1，type为0");
                 defaultImg = Constants.DEFAULT_NORMAL;
             } else if (dmImage.getType() == Constants.Image.ImageType.carousel) {
+                logger.info("[setDefaultImg]" + "category为1，type为1");
                 defaultImg = Constants.DEFAULT_CAROUSEL;
             } else if (dmImage.getType() == Constants.Image.ImageType.poster) {
+                logger.info("[setDefaultImg]" + "category为1，type为2");
                 defaultImg = Constants.DEFAULT_POSTER;
             }
         }
@@ -94,6 +101,7 @@ public class RestDmImageService {
 
     public List<DmImage> setDefaultImgList(List<DmImage> dmImages, Integer category, Integer type) throws Exception {
         if (EmptyUtils.isEmpty(dmImages)) {
+            logger.info("[setDefaultImgList]" + "没有查询到任何图片");
             dmImages = new ArrayList<DmImage>();
             DmImage dmImage = new DmImage();
             dmImage.setCategory(category);
