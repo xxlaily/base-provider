@@ -26,7 +26,7 @@ spring:
     trust-all: true
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
-moduleName: base-consumer
+moduleName: base_provider
 
 
 ---
